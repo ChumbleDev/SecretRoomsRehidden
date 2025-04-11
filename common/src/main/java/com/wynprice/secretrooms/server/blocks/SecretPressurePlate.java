@@ -15,6 +15,14 @@ import net.minecraft.world.phys.AABB;
 
 import java.util.function.Predicate;
 
+/**
+ * <p>A hidden pressure plate, does what it sounds like it does.</p>
+ *
+ *  Current Issues:
+ *  <ul>
+ *      <li>Redstone signal is activated one block above where it should. This needs to be brought down one block.</li>
+ *  </ul>
+ */
 public class SecretPressurePlate extends AbstractSecretPressurePlateBase {
 
     private static final BooleanProperty POWERED = BlockStateProperties.POWERED;
