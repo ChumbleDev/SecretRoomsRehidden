@@ -24,7 +24,7 @@ public class SecretItemTagsProvider extends ItemTagsProvider {
 
     @Override
     @SuppressWarnings("unchecked")
-    protected void addTags(HolderLookup.Provider p_256380_) {
+    protected void addTags(HolderLookup.Provider provider) {
         tag(EARTH_ITEM).add(Items.CLAY_BALL, Items.DIRT, Items.SAND);
         tag(SECRET_RECIPE_ITEMS).add(Items.ROTTEN_FLESH).addTags(ItemTags.WOOL);
         tag(CLEAR_GLASS).add(Items.GLASS);

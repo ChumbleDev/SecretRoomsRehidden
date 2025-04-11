@@ -34,11 +34,13 @@ public abstract class MixinSecretTileEntity extends BlockEntity {
         }
         ModelData.Builder builder = ModelData.builder()
                 .with(SecretModelData.SRM_BLOCKSTATE, this.data.getBlockState());
-
-        BlockState state = this.level.getBlockState(this.worldPosition);
-        if(state.getBlock() instanceof SecretBaseBlock) {
-            ((SecretBaseBlock) state.getBlock()).getMappedModelState(this.level, this.worldPosition, state)
-                    .ifPresent(mapState -> builder.with(SecretModelData.MODEL_MAP_STATE, mapState));
+        BlockState state;
+        if(this.level != null) {
+            state = this.level.getBlockState(this.worldPosition);
+            if (state.getBlock() instanceof SecretBaseBlock) {
+                ((SecretBaseBlock) state.getBlock()).getMappedModelState(this.level, this.worldPosition, state)
+                        .ifPresent(mapState -> builder.with(SecretModelData.MODEL_MAP_STATE, mapState));
+            }
         }
         return builder.build();
     }

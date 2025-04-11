@@ -12,7 +12,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.PipeBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +28,7 @@ public class OneWayGlassModel extends SecretBlockModel {
     }
 
     @Override
-    protected List<BakedQuad> render(@NotNull BlockState mirrorState, @NotNull BlockState baseState, @NotNull BakedModel model, @org.jetbrains.annotations.Nullable Direction side, @NotNull RandomSource rand, SecretModelRenderContext context) {
+    protected List<BakedQuad> render(BlockState mirrorState, BlockState baseState, BakedModel model, Direction side, RandomSource rand, SecretModelRenderContext context) {
         Supplier<List<BakedQuad>> superQuads = () -> getQuadsForSide(mirrorState, baseState, side, rand, context);
         return this.getQuadsNotSolid(baseState, mirrorState, superQuads, context);
     }

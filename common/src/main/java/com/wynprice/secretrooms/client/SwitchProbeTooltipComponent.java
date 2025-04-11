@@ -4,6 +4,7 @@ import com.wynprice.secretrooms.server.data.SecretData;
 import com.wynprice.secretrooms.server.items.SecretItems;
 import com.wynprice.secretrooms.server.items.SwitchProbe;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.FormattedCharSequence;
@@ -34,12 +35,15 @@ public class SwitchProbeTooltipComponent implements TooltipComponent {
         Item item = data.getBlockState().getBlock().asItem();
         if(item == Items.AIR) {
             this.spriteIfRender = Minecraft.getInstance().getBlockRenderer().getBlockModelShaper().getParticleIcon(data.getBlockState());
-            this.spriteColourIfRender = Minecraft.getInstance().getBlockColors().getColor(
-                data.getBlockState(),
-                Minecraft.getInstance().level,
-                Minecraft.getInstance().player.blockPosition(),
-                0
-            );
+            LocalPlayer localPlayer = Minecraft.getInstance().player;
+            if(localPlayer != null) {
+                this.spriteColourIfRender = Minecraft.getInstance().getBlockColors().getColor(
+                        data.getBlockState(),
+                        Minecraft.getInstance().level,
+                        Minecraft.getInstance().player.blockPosition(),
+                        0
+                );
+            }
 
 //            matrixStack.scale(0.625F, 0.625F, 1F);
 //            RenderSystem.setShaderColor(

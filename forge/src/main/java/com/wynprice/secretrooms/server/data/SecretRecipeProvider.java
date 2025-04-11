@@ -2,10 +2,8 @@ package com.wynprice.secretrooms.server.data;
 
 import com.wynprice.secretrooms.SecretRooms7;
 import com.wynprice.secretrooms.platform.SecretRoomsServices;
-import net.minecraft.advancements.critereon.ContextAwarePredicate;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
-import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
 import net.minecraft.resources.ResourceLocation;

@@ -28,6 +28,12 @@ import java.util.Optional;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
 
+/**
+ * Current State: Crashes upon use. TODO: FIX
+ * <br>
+ * <p>Used to change the appearance of SecretRoomsMod blocks</p>
+ * <a href="https://hexxit.fandom.com/wiki/Programmable_Switch_Probe">Wiki of the probe</a>
+ */
 public class SwitchProbe extends Item {
 
     public static final String PROBE_HIT_DATA = "probe_hit_data";

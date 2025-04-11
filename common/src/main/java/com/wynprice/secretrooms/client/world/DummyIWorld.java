@@ -110,7 +110,6 @@ public class DummyIWorld implements LevelAccessor {
         return this.world.getCurrentDifficultyAt(p_46800_);
     }
 
-    @org.jetbrains.annotations.Nullable
     @Override
     public MinecraftServer getServer() {
         return this.world.getServer();
@@ -127,7 +126,7 @@ public class DummyIWorld implements LevelAccessor {
     }
 
     @Override
-    public void playSound(@org.jetbrains.annotations.Nullable Player p_46775_, BlockPos p_46776_, SoundEvent p_46777_, SoundSource p_46778_, float p_46779_, float p_46780_) {
+    public void playSound(Player p_46775_, BlockPos p_46776_, SoundEvent p_46777_, SoundSource p_46778_, float p_46779_, float p_46780_) {
     }
 
     @Override
@@ -136,7 +135,7 @@ public class DummyIWorld implements LevelAccessor {
     }
 
     @Override
-    public void levelEvent(@org.jetbrains.annotations.Nullable Player p_46771_, int p_46772_, BlockPos p_46773_, int p_46774_) {
+    public void levelEvent(Player p_46771_, int p_46772_, BlockPos p_46773_, int p_46774_) {
         this.world.levelEvent(p_46771_, p_46772_, p_46773_, p_46774_);
     }
 
@@ -146,7 +145,7 @@ public class DummyIWorld implements LevelAccessor {
     }
 
     @Override
-    public void gameEvent(@org.jetbrains.annotations.Nullable Entity p_151549_, GameEvent p_151550_, BlockPos p_151551_) {
+    public void gameEvent(Entity p_151549_, GameEvent p_151550_, BlockPos p_151551_) {
         this.world.gameEvent(p_151549_, p_151550_, p_151551_);
     }
 
@@ -176,7 +175,7 @@ public class DummyIWorld implements LevelAccessor {
     }
 
     @Override
-    public List<Entity> getEntities(@org.jetbrains.annotations.Nullable Entity p_45936_, AABB p_45937_, Predicate<? super Entity> p_45938_) {
+    public List<Entity> getEntities(Entity p_45936_, AABB p_45937_, Predicate<? super Entity> p_45938_) {
         return this.world.getEntities(p_45936_, p_45937_, p_45938_);
     }
 
@@ -190,7 +189,7 @@ public class DummyIWorld implements LevelAccessor {
         return this.world.players();
     }
 
-    @org.jetbrains.annotations.Nullable
+
     @Override
     public ChunkAccess getChunk(int p_46823_, int p_46824_, ChunkStatus p_46825_, boolean p_46826_) {
         return this.world.getChunk(p_46823_, p_46824_, p_46825_, p_46826_);

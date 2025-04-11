@@ -45,8 +45,8 @@ import java.util.concurrent.CompletableFuture;
 
 @Mod(SecretRooms7.MODID)
 public class SecretRooms7Forge {
-    public SecretRooms7Forge() {
-        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+    public SecretRooms7Forge(FMLJavaModLoadingContext modLoadingContext) {
+        IEventBus bus = modLoadingContext.getModEventBus();
         IEventBus forgeBus = MinecraftForge.EVENT_BUS;
 
         bus.addListener(this::gatherData);
