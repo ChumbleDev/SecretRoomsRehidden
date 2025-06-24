@@ -21,3 +21,8 @@ build
 # other
 eclipse
 run
+
+backups
+1.19.2
+.cursor
+.vscode
