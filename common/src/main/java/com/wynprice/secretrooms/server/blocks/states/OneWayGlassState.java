@@ -25,14 +25,10 @@ public class OneWayGlassState extends SecretBaseState {
 
     @Override
     public boolean canOcclude() {
-        //We don't want the glass to cull out other blocks, so we need to ensure that if this is from the
-        //'shouldRenderFace' call, we act like a non solid block.
-        //TODO (port) move to mixin to shouldRenderFace PLEASE
-        StackTraceElement trace = Thread.currentThread().getStackTrace()[2];
-        if("net.minecraft.world.level.block.Block".equals(trace.getClassName()) && "shouldRenderFace".equals(trace.getMethodName())) {
-            return false;
-        }
-        return true;
+        // OCCLUSION X-RAY FIX: OneWayGlass should NEVER occlude adjacent blocks
+        // This prevents face culling that causes x-ray vision when blocks are placed next to glass
+        // The previous stack trace hack was fragile and likely broken in current Forge versions
+        return false;
     }
 
     @Override

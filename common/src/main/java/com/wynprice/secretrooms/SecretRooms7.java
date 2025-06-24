@@ -88,9 +88,5 @@ public class SecretRooms7 {
 //        MinecraftForgeClient.registerTooltipComponentFactory(SwitchProbeTooltipComponent.class, SwitchProbeTooltip::new);
 //    }
 
-    // TODO (port) impliment caller
-    public static void onResourceReload() {
-        SecretItems.TRUE_VISION_GOGGLES.get().refreshArmorModel();
-        OneWayGlassModel.refreshModel();
-    }
+
 }

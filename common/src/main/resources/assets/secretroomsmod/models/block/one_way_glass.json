@@ -1,0 +1,6 @@
+{
+  "loader": "secretroomsmod:one_way_glass",
+  "textures": {
+    "all": "block/glass"
+  }
+} 

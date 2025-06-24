@@ -43,11 +43,23 @@ legacyForge {
     }
 }
 
+repositories {
+    maven {
+        url "https://www.cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
+}
+
 sourceSets.main.resources.srcDir 'src/generated/resources'
 
 dependencies {
     compileOnly project(":common")
     annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT:processor")
+    
+    // Jade integration
+    implementation "curse.maven:jade-324717:${jade_version}"
 }
 
 jar {

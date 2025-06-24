@@ -38,8 +38,8 @@ public class SecretItems {
 
     public static final Supplier<Item> CAMOUFLAGE_PASTE = REGISTRY.register("camouflage_paste", () -> new Item(prop()));
     public static final Supplier<Item> SWITCH_PROBE = REGISTRY.register("switch_probe", () -> new SwitchProbe(prop()));
-
-    public static final Supplier<TrueVisionGoggles> TRUE_VISION_GOGGLES = REGISTRY.register("true_vision_goggles", () -> new TrueVisionGoggles(prop().durability(900)));
+    public static final Supplier<Item> TRUE_VISION_GOGGLES = REGISTRY.register("true_vision_goggles", () -> new TrueVisionGoggles(prop().durability(900)));
+    public static final Supplier<Item> TEXTURE_REMAPPER = REGISTRY.register("texture_remapper", () -> new TextureRemapper(prop()));
 
     private static Item.Properties prop() {
         return new Item.Properties();

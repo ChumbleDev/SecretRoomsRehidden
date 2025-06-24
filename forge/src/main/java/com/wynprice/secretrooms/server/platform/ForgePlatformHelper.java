@@ -1,12 +1,14 @@
 package com.wynprice.secretrooms.server.platform;
 
 import com.wynprice.secretrooms.SecretRooms7;
+import com.wynprice.secretrooms.network.ApplyTexturePacket;
 import com.wynprice.secretrooms.platform.services.ISecretRoomsPlatformHelper;
 import com.wynprice.secretrooms.server.registry.RegistryHolder;
 import com.wynprice.secretrooms.server.registry.ForgeRegistryHolder;
 import com.wynprice.secretrooms.server.tileentity.SecretTileEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -15,12 +17,36 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.Tags;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.simple.SimpleChannel;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 public class ForgePlatformHelper implements ISecretRoomsPlatformHelper {
+    private static final String PROTOCOL_VERSION = "1";
+    private static final SimpleChannel NETWORK = NetworkRegistry.newSimpleChannel(
+        new ResourceLocation(SecretRooms7.MODID, "main"),
+        () -> PROTOCOL_VERSION,
+        PROTOCOL_VERSION::equals,
+        PROTOCOL_VERSION::equals
+    );
+
+    public ForgePlatformHelper() {
+        NETWORK.messageBuilder(ApplyTexturePacket.class, 0, NetworkDirection.PLAY_TO_SERVER)
+            .encoder(ApplyTexturePacket::encode)
+            .decoder(ApplyTexturePacket::decode)
+            .consumerMainThread((packet, contextSupplier) -> {
+                NetworkEvent.Context context = contextSupplier.get();
+                packet.handle(context.getSender());
+                context.setPacketHandled(true);
+            })
+            .add();
+    }
+
     @Override
     public RegistryHolder<Item> createItemRegistryHolder() {
         return new ForgeRegistryHolder<>(ForgeRegistries.ITEMS, SecretRooms7.MODID);
@@ -63,5 +89,15 @@ public class ForgePlatformHelper implements ISecretRoomsPlatformHelper {
     @Override
     public void updateModelData(SecretTileEntity tileEntity) {
         tileEntity.requestModelDataUpdate();
+    }
+
+    @Override
+    public void clearPendingUpdate(BlockPos pos) {
+        // No-op for Forge - it doesn't use deferred updates
+    }
+
+    @Override
+    public void sendPacketToServer(ApplyTexturePacket packet) {
+        NETWORK.sendToServer(packet);
     }
 }

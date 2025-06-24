@@ -31,8 +31,6 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -250,9 +248,12 @@ public class SecretDoor extends SecretBaseBlock {
             getMirrorData(worldIn, other).ifPresent(d -> d.setBlockState(d.getBlockState().rotate(rotation)));
 
             state = state.cycle(OPEN);
-            worldIn.setBlock(pos, state, 10);
+            // Use flag 3 to ensure proper client-server sync and visual updates
+            worldIn.setBlock(pos, state, 3);
             this.playSound(player, worldIn, pos, state.getValue(OPEN));
             world.gameEvent(player, this.isOpen(state) ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
+            
+            // Force model refresh on both positions
             requestModelRefresh(worldIn, pos);
             requestModelRefresh(worldIn, other);
 
@@ -274,9 +275,9 @@ public class SecretDoor extends SecretBaseBlock {
                 requestModelRefresh(worldIn, pos);
                 requestModelRefresh(worldIn, state.getValue(HALF) == DoubleBlockHalf.LOWER ? pos.above() : pos.below());
             }
-            worldIn.setBlock(pos, state.setValue(POWERED, flag).setValue(OPEN, flag), 2);
+            // Use flag 3 to ensure proper client-server sync
+            worldIn.setBlock(pos, state.setValue(POWERED, flag).setValue(OPEN, flag), 3);
         }
-
     }
 
     @Override
@@ -310,7 +311,6 @@ public class SecretDoor extends SecretBaseBlock {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public long getSeed(BlockState state, BlockPos pos) {
         return Mth.getSeed(pos.getX(), pos.below(state.getValue(HALF) == DoubleBlockHalf.LOWER ? 0 : 1).getY(), pos.getZ());
     }

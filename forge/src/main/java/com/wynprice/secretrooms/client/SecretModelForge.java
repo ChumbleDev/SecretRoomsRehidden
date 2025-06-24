@@ -99,8 +99,14 @@ public class SecretModelForge implements IDynamicBakedModel {
 
         if(mirror.isPresent()) {
             DelegateWorld pooled = DelegateWorld.getPooled(level);
-            tileData = DISPATCHER.get().getBlockModel(mirror.get()).getModelData(pooled, pos, mirror.get(), tileData);
-            pooled.release();
+            try {
+                ModelData mirrorData = DISPATCHER.get().getBlockModel(mirror.get()).getModelData(pooled, pos, mirror.get(), tileData);
+                if (mirrorData != ModelData.EMPTY) {
+                    tileData = mirrorData;
+                }
+            } finally {
+                pooled.release();
+            }
         }
 
         return tileData;

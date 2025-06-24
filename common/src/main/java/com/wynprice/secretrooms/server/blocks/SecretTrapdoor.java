@@ -157,7 +157,7 @@ public class SecretTrapdoor extends SecretBaseBlock {
             return InteractionResult.PASS;
         } else {
             state = state.cycle(OPEN);
-            worldIn.setBlock(pos, state, 2);
+            worldIn.setBlock(pos, state, 3);
             requestModelRefresh(worldIn, pos);
             this.playSound(player, worldIn, pos, state.getValue(OPEN));
             return InteractionResult.SUCCESS;
@@ -178,13 +178,12 @@ public class SecretTrapdoor extends SecretBaseBlock {
                     state = state.setValue(OPEN, flag);
                     this.playSound(null, worldIn, pos, flag);
                 }
-                worldIn.setBlock(pos, state.setValue(POWERED, flag), 2);
+                worldIn.setBlock(pos, state.setValue(POWERED, flag), 3);
                 requestModelRefresh(worldIn, pos);
                 if (state.getValue(BlockStateProperties.WATERLOGGED)) {
                     worldIn.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(worldIn));
                 }
             }
-
         }
     }
 
@@ -229,5 +228,28 @@ public class SecretTrapdoor extends SecretBaseBlock {
 
     public boolean canEntitySpawn(BlockState state, BlockGetter worldIn, BlockPos pos, EntityType<?> type) {
         return false;
+    }
+
+    @Override
+    public boolean isSignalSource(BlockState state) {
+        return true;
+    }
+
+    @Override
+    public int getSignal(BlockState state, BlockGetter worldIn, BlockPos pos, Direction side) {
+        if (state.getValue(POWERED)) {
+            // Only emit signal from the bottom face when the trapdoor is in the bottom half
+            // Only emit signal from the top face when the trapdoor is in the top half
+            if ((state.getValue(HALF) == Half.BOTTOM && side == Direction.UP) ||
+                (state.getValue(HALF) == Half.TOP && side == Direction.DOWN)) {
+                return 15;
+            }
+        }
+        return 0;
+    }
+
+    @Override
+    public int getDirectSignal(BlockState state, BlockGetter worldIn, BlockPos pos, Direction side) {
+        return getSignal(state, worldIn, pos, side);
     }
 }

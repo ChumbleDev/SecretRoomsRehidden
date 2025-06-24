@@ -12,6 +12,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.PipeBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,8 +54,24 @@ public class OneWayGlassModel extends SecretBlockModel {
         }
         List<BakedQuad> quads = new ArrayList<>();
         for (BakedQuad bakedQuad : this.gatherAllQuads(context, superQuads)) {
-            //If the quads facing direction is set to glass in the one way glass state
-            if (baseState.getValue(PipeBlock.PROPERTY_BY_DIRECTION.get(bakedQuad.getDirection()))) {
+            Direction quadDirection = bakedQuad.getDirection();
+            
+            // Safety check for null direction
+            if (quadDirection == null) {
+                continue;
+            }
+            
+            // Get the property for this direction
+            BooleanProperty directionProperty = PipeBlock.PROPERTY_BY_DIRECTION.get(quadDirection);
+            if (directionProperty == null || !baseState.hasProperty(directionProperty)) {
+                continue;
+            }
+            
+            // Force bottom faces to always render as glass to prevent mimic texture showing from below
+            boolean shouldRenderAsGlass = baseState.getValue(directionProperty) || quadDirection == Direction.DOWN;
+            
+            //If the quads facing direction is set to glass in the one way glass state (or is bottom face)
+            if (shouldRenderAsGlass) {
                 quads.add(new NoTintBakedQuadRetextured(bakedQuad, glassModel.getParticleIcon()));
             }
         }
@@ -64,8 +81,24 @@ public class OneWayGlassModel extends SecretBlockModel {
     private List<BakedQuad> getDelegateQuadsNotSolid(BlockState baseState, Supplier<List<BakedQuad>> superQuads) {
         List<BakedQuad> quads = new ArrayList<>();
         for (BakedQuad bakedQuad : superQuads.get()) {
-            //If the quads facing direction isn't set to glass in the one way glass state
-            if (!baseState.getValue(PipeBlock.PROPERTY_BY_DIRECTION.get(bakedQuad.getDirection()))) {
+            Direction quadDirection = bakedQuad.getDirection();
+            
+            // Safety check for null direction
+            if (quadDirection == null) {
+                continue;
+            }
+            
+            // Get the property for this direction
+            BooleanProperty directionProperty = PipeBlock.PROPERTY_BY_DIRECTION.get(quadDirection);
+            if (directionProperty == null || !baseState.hasProperty(directionProperty)) {
+                continue;
+            }
+            
+            // Never render bottom faces as mimic (always force them to glass)
+            boolean shouldRenderAsMimic = !baseState.getValue(directionProperty) && quadDirection != Direction.DOWN;
+            
+            //If the quads facing direction isn't set to glass in the one way glass state (and not bottom face)
+            if (shouldRenderAsMimic) {
                 quads.add(bakedQuad);
             }
         }

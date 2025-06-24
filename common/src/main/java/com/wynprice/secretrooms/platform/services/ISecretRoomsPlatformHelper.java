@@ -1,5 +1,6 @@
 package com.wynprice.secretrooms.platform.services;
 
+import com.wynprice.secretrooms.network.ApplyTexturePacket;
 import com.wynprice.secretrooms.server.registry.RegistryHolder;
 import com.wynprice.secretrooms.server.tileentity.SecretTileEntity;
 import net.minecraft.core.BlockPos;
@@ -31,4 +32,8 @@ public interface ISecretRoomsPlatformHelper {
     TagKey<Item> getDyesItemTag();
 
     void updateModelData(SecretTileEntity tileEntity);
+
+    void clearPendingUpdate(BlockPos pos);
+
+    void sendPacketToServer(ApplyTexturePacket packet);
 }

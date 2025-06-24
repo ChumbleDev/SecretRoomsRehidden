@@ -27,6 +27,9 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
+import com.wynprice.secretrooms.platform.SecretRoomsServices;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -133,8 +136,26 @@ public class SecretBaseBlock extends BaseEntityBlock implements SimpleWaterlogge
     //We need to make sure stuff like fences are connected properly.
     @Override
     public void setPlacedBy(Level worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-        getMirrorState(worldIn, pos).ifPresent(mirror -> mirror.updateNeighbourShapes(new DummyIWorld(worldIn), pos, 3));
         super.setPlacedBy(worldIn, pos, state, placer, stack);
+        requestModelRefresh(worldIn, pos);
+    }
+
+    @Override
+    public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        // Handle deferred model updates for Fabric platform
+        // This is called when scheduleTick is used to defer visual updates
+        if (level.getBlockEntity(pos) instanceof SecretTileEntity tileEntity) {
+            // Clear the position from pending updates (Fabric platform specific)
+            SecretRoomsServices.PLATFORM.clearPendingUpdate(pos);
+            
+            // Perform the actual visual update safely
+            try {
+                level.sendBlockUpdated(pos, state, state, 3);
+                tileEntity.setChanged();
+            } catch (Exception e) {
+                // Silently handle any remaining issues
+            }
+        }
     }
 
     //TODO (port) figure out how to do sound type
@@ -383,26 +404,62 @@ public class SecretBaseBlock extends BaseEntityBlock implements SimpleWaterlogge
             return Optional.empty();
         }
 
-        // Fixes a deadlock that occurs when there is a SecretBlock in a spawn chunk (see https://github.com/Wyn-Price/SecretRooms/pull/53)
-        BlockState blockState = null;
-        if (world instanceof Level) {
-            LevelChunk chunk = ((Level) world).getChunkSource().getChunkNow(pos.getX() >> 4, pos.getZ() >> 4);
-            if (chunk != null) {
-                blockState = chunk.getBlockState(pos);
+        try {
+            // Fixes a deadlock that occurs when there is a SecretBlock in a spawn chunk (see https://github.com/Wyn-Price/SecretRooms/pull/53)
+            BlockState blockState = null;
+            if (world instanceof Level level) {
+                if (!level.hasChunkAt(pos)) {
+                    return Optional.empty();
+                }
+                LevelChunk chunk = level.getChunkSource().getChunkNow(pos.getX() >> 4, pos.getZ() >> 4);
+                if (chunk != null) {
+                    blockState = chunk.getBlockState(pos);
+                }
+            } else {
+                blockState = world.getBlockState(pos);
             }
-        } else {
-            blockState = world.getBlockState(pos);
-        }
 
-        BlockEntity te = world.getBlockEntity(pos);
-        return blockState != null && blockState.getBlock() instanceof SecretBaseBlock && te instanceof SecretTileEntity ?
-            Optional.of(((SecretTileEntity) te).getData()) : Optional.empty();
+            if (blockState != null && blockState.getBlock() instanceof SecretBaseBlock) {
+                BlockEntity tileEntity = world.getBlockEntity(pos);
+                if (tileEntity instanceof SecretTileEntity secretTile) {
+                    SecretData data = secretTile.getData();
+                    // Ensure cached data is loaded if level is available
+                    if (world instanceof Level level && level != null) {
+                        data.onLevelAvailable();
+                    }
+                    return Optional.of(data);
+                }
+            }
+        } catch (Exception e) {
+            // Silently handle errors to prevent cascading failures
+        }
+        return Optional.empty();
     }
 
     public static void requestModelRefresh(BlockGetter world, BlockPos pos) {
-        BlockEntity tileEntity = world.getBlockEntity(pos);
-        if(tileEntity instanceof SecretTileEntity te) {
-            te.requestModelDataUpdateIfPossible();
+        try {
+            BlockEntity tileEntity = world.getBlockEntity(pos);
+            if(tileEntity instanceof SecretTileEntity te && te.getLevel() != null) {
+                // Mark the tile entity as changed first
+                te.setChanged();
+                
+                // Request model data update
+                te.requestModelDataUpdateIfPossible();
+                
+                // Force a complete client-side refresh with different flags
+                Level level = te.getLevel();
+                BlockState state = level.getBlockState(pos);
+                
+                if (level.isClientSide) {
+                    // On client: force immediate visual refresh
+                    level.sendBlockUpdated(pos, state, state, 11);
+                } else {
+                    // On server: send comprehensive update to clients
+                    level.sendBlockUpdated(pos, state, state, 3);
+                }
+            }
+        } catch (Exception e) {
+            // Silently handle errors to prevent cascading failures
         }
     }
 

@@ -1,4 +1,49 @@
 plugins {
     id 'fabric-loom' version '1.9-SNAPSHOT' apply(false)
-    id 'net.neoforged.moddev.legacyforge' version '2.0.77' apply(false)
+    id 'net.neoforged.moddev.legacyforge' version '2.0.82' apply(false)
+}
+
+// Task to copy all platform JARs to a central location with proper naming
+task collectJars {
+    dependsOn ':forge:build', ':fabric:build'
+    
+    doLast {
+        // Create the central build/libs directory
+        def centralLibsDir = file("$buildDir/libs")
+        centralLibsDir.mkdirs()
+        
+        // Copy Forge JARs
+        copy {
+            from "$projectDir/forge/build/libs"
+            into centralLibsDir
+            include '*.jar'
+            exclude '*-sources.jar', '*-javadoc.jar'
+            rename { filename ->
+                filename.replace('-forge-', '-forge-')
+            }
+        }
+        
+        // Copy Fabric JARs  
+        copy {
+            from "$projectDir/fabric/build/libs"
+            into centralLibsDir
+            include '*.jar'
+            exclude '*-sources.jar', '*-javadoc.jar'
+            rename { filename ->
+                filename.replace('-fabric-', '-fabric-')
+            }
+        }
+        
+        println "JARs collected in build/libs:"
+        centralLibsDir.listFiles().each { file ->
+            if (file.name.endsWith('.jar')) {
+                println "  - ${file.name}"
+            }
+        }
+    }
+}
+
+// Create a build task that depends on collectJars
+task build {
+    dependsOn collectJars
 }

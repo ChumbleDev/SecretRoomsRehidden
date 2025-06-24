@@ -1,6 +1,6 @@
 {
     "schemaVersion": 1,
-    "id": "secretroomsmod",
+    "id": "${mod_id}",
     "version": "${version}",
     "name": "${mod_name}",
     "description": "${description}",
@@ -8,24 +8,26 @@
         "${mod_author}"
     ],
     "contact": {
-        "homepage": "https://fabricmc.net/",
-        "sources": "https://github.com/FabricMC/fabric-example-mod"
+        "homepage": "https://github.com/Wyn-Price/SecretRooms",
+        "sources": "https://github.com/Wyn-Price/SecretRooms"
     },
     "license": "${license}",
-    "icon": "assets/modid/${mod_id}.png",
+    "icon": "assets/${mod_id}/icon.png",
     "environment": "*",
     "entrypoints": {
         "main": [
-            "com.example.examplemod.ExampleMod"
+            "com.wynprice.secretrooms.SecretRooms7Fabric"
+        ],
+        "client": [
+            "com.wynprice.secretrooms.SecretRooms7FabricClient"
         ]
     },
     "mixins": [
-        "${mod_id}.mixins.json",
-        "${mod_id}.fabric.mixins.json"
+        "${mod_id}.mixins.json"
     ],
     "depends": {
-        "fabricloader": ">=0.14",
-        "fabric": "*",
+        "fabricloader": ">=0.16.13",
+        "fabric-api": "*",
         "minecraft": "${minecraft_version}",
         "java": ">=17"
     },

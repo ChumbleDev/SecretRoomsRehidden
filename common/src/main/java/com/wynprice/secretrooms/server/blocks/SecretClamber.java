@@ -10,9 +10,7 @@ public class SecretClamber extends GhostBlock {
         super(properties);
     }
 
-    // TODO (port): move to mixin ?
-//    @Override
-//    public boolean isLadder(BlockState state, LevelReader world, BlockPos pos, LivingEntity entity) {
-//        return true;
-//    }
+    public boolean isLadder(BlockState state, LevelReader world, BlockPos pos, LivingEntity entity) {
+        return true;
+    }
 }
